@@ -1,0 +1,32 @@
+spring:
+  application:
+    name: core-api
+  datasource:
+    url: ${DATASOURCE_URL:jdbc:h2:mem:picpay}
+    username: ${DATASOURCE_USERNAME:picpay}
+    password: ${DATASOURCE_PASSWORD:picpay}
+    driver-class-name: org.h2.Driver
+  h2:
+    console:
+      enabled: true
+  flyway:
+    baseline-on-migrate: true
+    enabled: true
+    baseline-description: "init"
+    baseline-version: 0
+    locations: classpath:db/migration
+    user: ${spring.datasource.username}
+    password: ${spring.datasource.password}
+  kafka:
+    consumer:
+      bootstrap-servers: localhost:9092
+      group-id: groupA
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: '*'
+    producer:
+      bootstrap-servers: localhost:9092
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
