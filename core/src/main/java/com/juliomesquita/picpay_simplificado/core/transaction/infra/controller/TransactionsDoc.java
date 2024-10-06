@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -41,6 +42,7 @@ public interface TransactionsDoc {
                                     value = TransactionRequest.requestExample))))
     @PostMapping(produces = {"application/json"})
     default ResponseEntity<TransactionResponse> createTransactions(
+            @Valid
             @Parameter(name = "TransactionDTO", description = "Corpo da requisição", required = true)
             @RequestBody TransactionRequest request
     ) {

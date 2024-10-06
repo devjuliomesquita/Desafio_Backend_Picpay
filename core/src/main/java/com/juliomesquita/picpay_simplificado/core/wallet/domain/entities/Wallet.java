@@ -14,9 +14,6 @@ public record Wallet(
         BigDecimal balance,
         Long version
 ) {
-    /*
-     * Métodos de dominio
-     * */
 
     public Wallet debit(BigDecimal value) {
         return new Wallet(this.id, this.fullName, this.cpf, this.email, this.password, this.typeWallet,
