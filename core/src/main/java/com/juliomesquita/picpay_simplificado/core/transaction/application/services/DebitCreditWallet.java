@@ -1,6 +1,7 @@
 package com.juliomesquita.picpay_simplificado.core.transaction.application.services;
 
 import com.juliomesquita.picpay_simplificado.core.transaction.domain.entities.Transaction;
+import com.juliomesquita.picpay_simplificado.core.transaction.domain.exceptions.TransactionErrorException;
 import com.juliomesquita.picpay_simplificado.core.wallet.domain.entities.Wallet;
 import com.juliomesquita.picpay_simplificado.core.wallet.infra.perfistence.WalletEntity;
 import com.juliomesquita.picpay_simplificado.core.wallet.infra.perfistence.WalletRepository;
@@ -27,13 +28,16 @@ public class DebitCreditWallet {
         log.info("Transaction sent: {}", transaction);
         Wallet walletPayer = this.walletRepository.findById(transaction.payer())
                 .map(WalletEntity::restore)
-                .orElseThrow(() -> new RuntimeException(""));
+                .orElseThrow(TransactionErrorException::new);
         Wallet walletPayee = this.walletRepository.findById(transaction.payee())
                 .map(WalletEntity::restore)
-                .orElseThrow(() -> new RuntimeException(""));
+                .orElseThrow(TransactionErrorException::new);
 
-        WalletEntity walletPayerSaved = this.walletRepository.save(new WalletEntity(walletPayer.debit(transaction.value())));
-        WalletEntity walletPayeeSaved = this.walletRepository.save(new WalletEntity(walletPayee.credit(transaction.value())));
+        WalletEntity walletPayerSaved = this.walletRepository.save(
+                new WalletEntity(walletPayer.debit(transaction.value())));
+        WalletEntity walletPayeeSaved = this.walletRepository.save(
+                new WalletEntity(walletPayee.credit(transaction.value())));
+
         log.info("Wallet updated :: {} value: {} :: {} value: {}",
                 walletPayerSaved.fullName(),
                 walletPayerSaved.balance(),

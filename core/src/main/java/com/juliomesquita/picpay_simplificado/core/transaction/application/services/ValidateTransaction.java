@@ -1,6 +1,7 @@
 package com.juliomesquita.picpay_simplificado.core.transaction.application.services;
 
 import com.juliomesquita.picpay_simplificado.core.transaction.domain.entities.Transaction;
+import com.juliomesquita.picpay_simplificado.core.transaction.domain.exceptions.TransactionErrorException;
 import com.juliomesquita.picpay_simplificado.core.wallet.domain.enums.TypeWallet;
 import com.juliomesquita.picpay_simplificado.core.wallet.infra.perfistence.WalletRepository;
 import org.slf4j.Logger;
@@ -17,20 +18,21 @@ public class ValidateTransaction {
     public ValidateTransaction(final WalletRepository walletRepository) {
         this.walletRepository = Objects.requireNonNull(walletRepository);
     }
+
     /*
-    * Para a transação ser válida:
-    *  - Quem enviou deve ter uma carteira comum
-    *  - Quem enviou deve ter dinheiro suficiente para a trasação
-    *  - Quem enviou não deve ser o mesmo que recebeu
-    * */
-    public void execute(Transaction transaction){
-        log.info("Vali");
+     * Para a transação ser válida:
+     *  - Quem enviou deve ter uma carteira comum
+     *  - Quem enviou deve ter dinheiro suficiente para a trasação
+     *  - Quem enviou não deve ser o mesmo que recebeu
+     * */
+    public void execute(Transaction transaction) {
+        log.info("Validação");
         this.walletRepository.findById(transaction.payer())
                 .map(payer -> payer.typeWallet() == TypeWallet.COMUM.getValue() &&
                         payer.balance().compareTo(transaction.value()) >= 0 &&
                         !payer.id().equals(transaction.payee()))
-                .orElseThrow(() -> new RuntimeException("Trasação inválida."));
+                .orElseThrow(TransactionErrorException::new);
         this.walletRepository.findById(transaction.payee())
-                .orElseThrow(() -> new RuntimeException("Trasação inválida."));
+                .orElseThrow(TransactionErrorException::new);
     }
 }

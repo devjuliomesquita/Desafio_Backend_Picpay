@@ -22,6 +22,7 @@ public record Wallet(
         return new Wallet(this.id, this.fullName, this.cpf, this.email, this.password, this.typeWallet,
                 this.balance.subtract(value), this.version);
     }
+
     public Wallet credit(BigDecimal value) {
         return new Wallet(this.id, this.fullName, this.cpf, this.email, this.password, this.typeWallet,
                 this.balance.add(value), this.version);
